@@ -1,0 +1,36 @@
+{
+  "name": "simple-logic-injection",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node-dev --no-notify --respawn src/server.ts'",
+    "test": "node --import tsx --test __tests__/*.ts",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint 'src/**/*.ts' --fix",
+    "format": "prettier --write 'src/**/*.ts' '__tests__/**/*.ts'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@faker-js/faker": "^9.5.0",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
+    "eslint": "^9.20.1",
+    "eslint-import-resolver-typescript": "^3.8.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "globals": "^15.15.0",
+    "nodemon": "^3.1.9",
+    "prettier": "3.5.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.24.0"
+  }
+}
