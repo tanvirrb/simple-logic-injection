@@ -9,9 +9,9 @@ A lightweight TypeScript library for injecting and executing logic dynamically.
 - Type-safe with full TypeScript support
 
 ## Installation
-
+Publishing to `npm` is still work in progress. For now, you can install the package directly from GitHub.
 ```sh
-npm install https://github.com
+npm install https://github.com/tanvirrb/simple-logic-injection
 ```
 
 ## Usage
