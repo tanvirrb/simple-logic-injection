@@ -58,7 +58,7 @@ class LogicInjector<TArgs extends any[] = any[], TResult = any>
   /**
    * Get the logic map
    */
-  getLogicMap(): Map<string, (...args: TArgs) => TResult> {
+  getLogicList(): Map<string, (...args: TArgs) => TResult> {
     return this.logicMap;
   }
 }

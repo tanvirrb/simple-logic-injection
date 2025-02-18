@@ -40,13 +40,13 @@ describe('logicInjection', () => {
     }, Error);
   });
 
-  it('should get the logic map', () => {
+  it('should get the logic list', () => {
     const logic = new LogicInjector();
     logic.register('add', (a: number, b: number) => a + b);
     logic.register('subtract', (a: number, b: number) => a - b);
 
-    const logicMap = logic.getLogicMap();
-    assert.strictEqual(logicMap.size, 2);
+    const logicList = logic.getLogicList();
+    assert.strictEqual(logicList.size, 2);
   });
 
   it('should concatenate strings', () => {
