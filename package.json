@@ -10,12 +10,15 @@
     "test": "node --import tsx --test __tests__/*.ts",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
-    "format": "prettier --write 'src/**/*.ts' '__tests__/**/*.ts'"
+    "format": "prettier --write 'src/**/*.ts' '__tests__/**/*.ts'",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
     "@eslint/js": "^9.20.0",
     "@faker-js/faker": "^9.5.0",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
@@ -25,6 +28,7 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-promise": "^7.2.1",
     "globals": "^15.15.0",
+    "husky": "^9.1.7",
     "nodemon": "^3.1.9",
     "prettier": "3.5.1",
     "ts-node": "^10.9.2",

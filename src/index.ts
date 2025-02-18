@@ -14,7 +14,7 @@ class LogicInjector<TArgs extends any[] = any[], TResult = any>
    * @param key
    * @param logicFunction
    */
-  registerLogic(
+  register(
     key: string,
     logicFunction: (...args: TArgs) => TResult,
   ): Map<string, (...args: TArgs) => TResult> {
@@ -27,7 +27,7 @@ class LogicInjector<TArgs extends any[] = any[], TResult = any>
    * @param key
    * @param args
    */
-  executeLogic(key: string, ...args: TArgs): TResult {
+  execute(key: string, ...args: TArgs): TResult {
     if (!this.logicMap.has(key)) {
       throw new Error(`Logic with key "${key}" not found`);
     }
@@ -38,8 +38,21 @@ class LogicInjector<TArgs extends any[] = any[], TResult = any>
    * Unregister a logic function
    * @param key
    */
-  unregisterLogic(key: string): boolean {
+  unregister(key: string): boolean {
     return this.logicMap.delete(key);
+  }
+
+  /**
+   * Get a logic function
+   * @param key
+   */
+  get(key: string): (...args: TArgs) => TResult {
+    const logicFunction = this.logicMap.get(key);
+    if (!logicFunction) {
+      throw new Error(`Logic with key "${key}" not found`);
+    }
+
+    return logicFunction;
   }
 
   /**

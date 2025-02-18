@@ -4,74 +4,71 @@ import LogicInjector from '@app/index';
 import { faker } from '@faker-js/faker';
 
 describe('logicInjection', () => {
-  it('should register add logic', async () => {
+  it('should register add logic', () => {
     const logic = new LogicInjector();
-    logic.registerLogic('add', (a: number, b: number) => a + b);
+    logic.register('add', (a: number, b: number) => a + b);
 
-    assert.strictEqual(logic.executeLogic('add', 1, 2), 3);
+    assert.strictEqual(logic.execute('add', 1, 2), 3);
   });
 
-  it('should remove add logic', async () => {
+  it('should remove add logic', () => {
     const logic = new LogicInjector();
-    logic.registerLogic('add', (a: number, b: number) => a + b);
-    const isLogicUnregistered = logic.unregisterLogic('add');
+    logic.register('add', (a: number, b: number) => a + b);
+    const isLogicUnregistered = logic.unregister('add');
 
     assert.ok(isLogicUnregistered);
     assert.throws(() => {
-      logic.executeLogic('add', 1, 2);
+      logic.execute('add', 1, 2);
     }, Error);
   });
 
-  it('should register subtract logic', async () => {
+  it('should register subtract logic', () => {
     const logic = new LogicInjector();
-    logic.registerLogic('subtract', (a: number, b: number) => a - b);
+    logic.register('subtract', (a: number, b: number) => a - b);
 
-    assert.strictEqual(logic.executeLogic('subtract', 1, 2), -1);
+    assert.strictEqual(logic.execute('subtract', 1, 2), -1);
   });
 
-  it('should remove subtract logic', async () => {
+  it('should remove subtract logic', () => {
     const logic = new LogicInjector();
-    logic.registerLogic('subtract', (a: number, b: number) => a - b);
-    const isLogicUnregistered = logic.unregisterLogic('subtract');
+    logic.register('subtract', (a: number, b: number) => a - b);
+    const isLogicUnregistered = logic.unregister('subtract');
 
     assert.ok(isLogicUnregistered);
     assert.throws(() => {
-      logic.executeLogic('subtract', 1, 2);
+      logic.execute('subtract', 1, 2);
     }, Error);
   });
 
-  it('should get the logic map', async () => {
+  it('should get the logic map', () => {
     const logic = new LogicInjector();
-    logic.registerLogic('add', (a: number, b: number) => a + b);
-    logic.registerLogic('subtract', (a: number, b: number) => a - b);
+    logic.register('add', (a: number, b: number) => a + b);
+    logic.register('subtract', (a: number, b: number) => a - b);
 
     const logicMap = logic.getLogicMap();
     assert.strictEqual(logicMap.size, 2);
   });
 
-  it('should concatenate strings', async () => {
+  it('should concatenate strings', () => {
     const logic = new LogicInjector();
-    logic.registerLogic('concatenate', (a: string, b: string) => a + b);
+    logic.register('concatenate', (a: string, b: string) => a + b);
 
     assert.strictEqual(
-      logic.executeLogic('concatenate', 'hello', 'world'),
+      logic.execute('concatenate', 'hello', 'world'),
       'hello'.concat('world'),
     );
   });
 
-  it('should concatenate strings and return the length', async () => {
+  it('should concatenate strings and return the length', () => {
     const logic = new LogicInjector();
-    logic.registerLogic(
-      'concatenate',
-      (a: string, b: string) => (a + b).length,
-    );
+    logic.register('concatenate', (a: string, b: string) => (a + b).length);
 
-    assert.strictEqual(logic.executeLogic('concatenate', 'hello', 'world'), 10);
+    assert.strictEqual(logic.execute('concatenate', 'hello', 'world'), 10);
   });
 
   // create two custom interfaces named userData and updatedUser and create a LogicInjector with those two types as passed generics.
   // then register a logic and execute it
-  it('should register and execute a logic function with custom interfaces', async () => {
+  it('should register and execute a logic function with custom interfaces', () => {
     interface UserData {
       name: string;
       age: number;
@@ -91,7 +88,7 @@ describe('logicInjection', () => {
 
     const logic = new LogicInjector();
 
-    logic.registerLogic(
+    logic.register(
       'updateUser',
       (user: UserData, email: string): UpdatedUser => ({
         ...user,
@@ -99,7 +96,7 @@ describe('logicInjection', () => {
       }),
     );
 
-    const updatedUser = logic.executeLogic(
+    const updatedUser = logic.execute(
       'updateUser',
       { name: person.name, age: person.age },
       person.email,
@@ -109,5 +106,20 @@ describe('logicInjection', () => {
       age: person.age,
       email: person.email,
     });
+  });
+
+  it('should get a logic with key', () => {
+    const logic = new LogicInjector();
+    logic.register('add', (a: number, b: number) => a + b);
+
+    const addLogic = logic.get('add');
+    assert.strictEqual(addLogic(1, 2), 3);
+  });
+
+  it('should throw an error when logic is not found', () => {
+    const logic = new LogicInjector();
+    assert.throws(() => {
+      logic.get('add');
+    }, Error);
   });
 });
