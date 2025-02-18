@@ -10,5 +10,5 @@ export interface ILogicInjection<TArgs extends any[] = any[], TResult = any> {
 
   get(key: string): (...args: TArgs) => TResult;
 
-  getLogicMap(): Map<string, (...args: TArgs) => TResult>;
+  getLogicList(): Map<string, (...args: TArgs) => TResult>;
 }
