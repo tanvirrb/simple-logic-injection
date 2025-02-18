@@ -4,14 +4,14 @@ import LogicInjector from '@app/index';
 import { faker } from '@faker-js/faker';
 
 describe('logicInjection', () => {
-  it('should register add logic', async () => {
+  it('should register add logic', () => {
     const logic = new LogicInjector();
     logic.registerLogic('add', (a: number, b: number) => a + b);
 
     assert.strictEqual(logic.executeLogic('add', 1, 2), 3);
   });
 
-  it('should remove add logic', async () => {
+  it('should remove add logic', () => {
     const logic = new LogicInjector();
     logic.registerLogic('add', (a: number, b: number) => a + b);
     const isLogicUnregistered = logic.unregisterLogic('add');
@@ -22,14 +22,14 @@ describe('logicInjection', () => {
     }, Error);
   });
 
-  it('should register subtract logic', async () => {
+  it('should register subtract logic', () => {
     const logic = new LogicInjector();
     logic.registerLogic('subtract', (a: number, b: number) => a - b);
 
     assert.strictEqual(logic.executeLogic('subtract', 1, 2), -1);
   });
 
-  it('should remove subtract logic', async () => {
+  it('should remove subtract logic', () => {
     const logic = new LogicInjector();
     logic.registerLogic('subtract', (a: number, b: number) => a - b);
     const isLogicUnregistered = logic.unregisterLogic('subtract');
@@ -40,7 +40,7 @@ describe('logicInjection', () => {
     }, Error);
   });
 
-  it('should get the logic map', async () => {
+  it('should get the logic map', () => {
     const logic = new LogicInjector();
     logic.registerLogic('add', (a: number, b: number) => a + b);
     logic.registerLogic('subtract', (a: number, b: number) => a - b);
@@ -49,7 +49,7 @@ describe('logicInjection', () => {
     assert.strictEqual(logicMap.size, 2);
   });
 
-  it('should concatenate strings', async () => {
+  it('should concatenate strings', () => {
     const logic = new LogicInjector();
     logic.registerLogic('concatenate', (a: string, b: string) => a + b);
 
@@ -59,7 +59,7 @@ describe('logicInjection', () => {
     );
   });
 
-  it('should concatenate strings and return the length', async () => {
+  it('should concatenate strings and return the length', () => {
     const logic = new LogicInjector();
     logic.registerLogic(
       'concatenate',
@@ -71,7 +71,7 @@ describe('logicInjection', () => {
 
   // create two custom interfaces named userData and updatedUser and create a LogicInjector with those two types as passed generics.
   // then register a logic and execute it
-  it('should register and execute a logic function with custom interfaces', async () => {
+  it('should register and execute a logic function with custom interfaces', () => {
     interface UserData {
       name: string;
       age: number;
