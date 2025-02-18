@@ -107,4 +107,19 @@ describe('logicInjection', () => {
       email: person.email,
     });
   });
+
+  it('should get a logic with key', () => {
+    const logic = new LogicInjector();
+    logic.register('add', (a: number, b: number) => a + b);
+
+    const addLogic = logic.get('add');
+    assert.strictEqual(addLogic(1, 2), 3);
+  });
+
+  it('should throw an error when logic is not found', () => {
+    const logic = new LogicInjector();
+    assert.throws(() => {
+      logic.get('add');
+    }, Error);
+  });
 });

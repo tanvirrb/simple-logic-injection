@@ -8,5 +8,7 @@ export interface ILogicInjection<TArgs extends any[] = any[], TResult = any> {
 
   unregister(key: string): boolean;
 
+  get(key: string): (...args: TArgs) => TResult;
+
   getLogicMap(): Map<string, (...args: TArgs) => TResult>;
 }

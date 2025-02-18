@@ -43,6 +43,19 @@ class LogicInjector<TArgs extends any[] = any[], TResult = any>
   }
 
   /**
+   * Get a logic function
+   * @param key
+   */
+  get(key: string): (...args: TArgs) => TResult {
+    const logicFunction = this.logicMap.get(key);
+    if (!logicFunction) {
+      throw new Error(`Logic with key "${key}" not found`);
+    }
+
+    return logicFunction;
+  }
+
+  /**
    * Get the logic map
    */
   getLogicMap(): Map<string, (...args: TArgs) => TResult> {
