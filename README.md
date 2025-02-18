@@ -23,38 +23,49 @@ import LogicInjector from 'simple-logic-injection';
 
 const logicInjector = new LogicInjector<string[], string>();
 ```
+or you can use without any explicit type
+```ts
+import LogicInjector from 'simple-logic-injection';
+
+const logicInjector = new LogicInjector();
+```
 
 ### Registering Logic
 
 ```ts
-logicInjector.registerLogic('greet', (name: string) => `Hello, ${name}!`);
+logicInjector.register('greet', (name: string) => `Hello, ${name}!`);
 ```
 
 ### Executing Logic
 
 ```ts
-const message = logicInjector.executeLogic('greet', 'Alice');
+const message = logicInjector.execute('greet', 'Alice');
 console.log(message); // Output: Hello, Alice!
 ```
 
 ### Unregistering Logic
 
 ```ts
-logicInjector.unregisterLogic('greet');
+logicInjector.unregister('greet');
 ```
 
-### Getting the Logic Map
+### Get logic by key
 
 ```ts
-const logicMap = logicInjector.getLogicMap();
-console.log(logicMap); // Output: { greet: [Function] }
+const logic = logicInjector.get('greet');
+```
+
+### Getting the Logic List
+
+```ts
+const logicList = logicInjector.getLogicList();
+console.log(logicList); // Output: { greet: [Function] }
 ```
 
 ## Scripts
 
 - `build` - Compiles TypeScript
 - `start` - Runs the compiled JavaScript file
-- `dev` - Runs development mode with hot reloading
 - `test` - Runs unit tests
 - `lint` - Lints the project
 - `lint:fix` - Fixes lint issues
