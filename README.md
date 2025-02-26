@@ -1,3 +1,5 @@
+[![Test](https://github.com/tanvirrb/simple-logic-injection/actions/workflows/unit-test.yml/badge.svg)](https://github.com/tanvirrb/event-app/actions/workflows/unit-test.yml)
+
 # Simple Logic Injection
 
 A lightweight TypeScript library for injecting and executing logic dynamically.
