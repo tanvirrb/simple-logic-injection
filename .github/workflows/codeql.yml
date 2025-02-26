@@ -1,0 +1,41 @@
+name: CodeQL
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - '__tests__/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - '__tests__/**'
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          language: javascript-typescript
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Analyze with CodeQL
+        uses: github/codeql-action/analyze@v3
+        with:
+          languages: ${{ matrix.language }}
+          query: 'javascript-code-scanning.qls'
+          fail-on-error: false
