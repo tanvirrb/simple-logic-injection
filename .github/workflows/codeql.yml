@@ -35,6 +35,4 @@ jobs:
         output: '../results'
         upload: 'always'
         cleanup-level: 'brutal'
-        add-snippets: 'false'
         skip-queries: 'false'
-        verbosity: '^(off|errors|warnings|(info|progress)|(debug|progress\+)|(trace|progress\+\+)|progress\+\+\+)$'
