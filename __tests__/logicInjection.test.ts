@@ -1,125 +1,194 @@
 import { describe, it } from 'node:test';
-import * as assert from 'node:assert';
+import assert from 'node:assert';
 import LogicInjector from '@app/index';
-import { faker } from '@faker-js/faker';
+import { LogicInjectionError } from '@app/utils/LogicInjectionError';
 
 describe('logicInjection', () => {
-  it('should register add logic', () => {
-    const logic = new LogicInjector();
-    logic.register('add', (a: number, b: number) => a + b);
-
-    assert.strictEqual(logic.execute('add', 1, 2), 3);
+  // Registration tests
+  it('should register a function successfully', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    logicInjector.register('add', add);
+    assert.strictEqual(logicInjector.get('add'), add);
   });
 
-  it('should remove add logic', () => {
-    const logic = new LogicInjector();
-    logic.register('add', (a: number, b: number) => a + b);
-    const isLogicUnregistered = logic.unregister('add');
+  it('should throw when registering with empty key', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    assert.throws(
+      () => logicInjector.register('', add),
+      (err: Error) => {
+        assert(err instanceof LogicInjectionError);
+        assert.strictEqual(
+          err.message,
+          'Invalid key: "". Key must be a non-empty string.',
+        );
+        return true;
+      },
+    );
+  });
 
-    assert.ok(isLogicUnregistered);
+  it('should throw when registering with whitespace key', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    assert.throws(
+      () => logicInjector.register('   ', add),
+      LogicInjectionError,
+    );
+  });
+
+  it('should throw when registering non-function', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
     assert.throws(() => {
-      logic.execute('add', 1, 2);
-    }, Error);
+      // @ts-expect-error Testing runtime type check
+      logicInjector.register('test', 'not a function');
+    }, LogicInjectionError);
   });
 
-  it('should register subtract logic', () => {
-    const logic = new LogicInjector();
-    logic.register('subtract', (a: number, b: number) => a - b);
-
-    assert.strictEqual(logic.execute('subtract', 1, 2), -1);
+  // Execution tests
+  it('should execute registered function correctly', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    logicInjector.register('add', add);
+    assert.strictEqual(logicInjector.execute('add', 2, 3), 5);
   });
 
-  it('should remove subtract logic', () => {
-    const logic = new LogicInjector();
-    logic.register('subtract', (a: number, b: number) => a - b);
-    const isLogicUnregistered = logic.unregister('subtract');
-
-    assert.ok(isLogicUnregistered);
-    assert.throws(() => {
-      logic.execute('subtract', 1, 2);
-    }, Error);
+  it('should throw when executing non-existent function', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    assert.throws(
+      () => logicInjector.execute('nonexistent', 1, 2),
+      (err: Error) => {
+        assert(err instanceof LogicInjectionError);
+        assert.strictEqual(
+          err.message,
+          'Logic with key "nonexistent" not found',
+        );
+        return true;
+      },
+    );
   });
 
-  it('should get the logic list', () => {
-    const logic = new LogicInjector();
-    logic.register('add', (a: number, b: number) => a + b);
-    logic.register('subtract', (a: number, b: number) => a - b);
+  // Multiple functions tests
+  it('should handle multiple functions', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    const multiply = (a: number, b: number): number => a * b;
+    logicInjector.register('add', add);
+    logicInjector.register('multiply', multiply);
 
-    const logicList = logic.getLogicList();
-    assert.strictEqual(logicList.size, 2);
+    assert.strictEqual(logicInjector.execute('add', 2, 3), 5);
+    assert.strictEqual(logicInjector.execute('multiply', 2, 3), 6);
   });
 
-  it('should concatenate strings', () => {
-    const logic = new LogicInjector();
-    logic.register('concatenate', (a: string, b: string) => a + b);
+  // Unregister tests
+  it('should unregister function successfully', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    logicInjector.register('add', add);
+    const result = logicInjector.unregister('add');
+    assert.strictEqual(result, true);
+    assert.throws(() => logicInjector.get('add'), LogicInjectionError);
+  });
+
+  it('should return false when unregistering non-existent function', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    assert.strictEqual(logicInjector.unregister('nonexistent'), false);
+  });
+
+  it('should throw when unregistering with invalid key', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    assert.throws(() => logicInjector.unregister(''), LogicInjectionError);
+  });
+
+  // Get tests
+  it('should get registered function', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    logicInjector.register('add', add);
+    const func = logicInjector.get('add');
+    assert.strictEqual(func(2, 3), 5);
+  });
+
+  it('should throw when getting non-existent function', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    assert.throws(() => logicInjector.get('nonexistent'), LogicInjectionError);
+  });
+
+  // Logic list tests
+  it('should return correct logic list', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    const multiply = (a: number, b: number): number => a * b;
+    logicInjector.register('add', add);
+    logicInjector.register('multiply', multiply);
+
+    const list = logicInjector.getLogicList();
+    assert.strictEqual(list.size, 2);
+    assert.strictEqual(list.has('add'), true);
+    assert.strictEqual(list.has('multiply'), true);
+  });
+
+  // Edge cases
+  it('should throw when registering duplicate key', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
+    const multiply = (a: number, b: number): number => a * b;
+
+    logicInjector.register('math', add);
+    assert.throws(
+      () => logicInjector.register('math', multiply),
+      (err: Error) => {
+        assert(err instanceof LogicInjectionError);
+        assert.strictEqual(err.message, 'Logic with key "math" already exists');
+        return true;
+      },
+    );
+  });
+
+  // Generic type tests
+  it('should handle different generic types', () => {
+    const logicInjector = new LogicInjector<[string, string], string>();
+    const concat = (a: string, b: string): string => a + b;
+
+    logicInjector.register('concat', concat);
+    assert.strictEqual(
+      logicInjector.execute('concat', 'hello ', 'world'),
+      'hello world',
+    );
+  });
+
+  it('should handle complex types', () => {
+    interface User {
+      name: string;
+      age: number;
+    }
+    const logicInjector = new LogicInjector<[User], string>();
+
+    const formatUser = (user: User): string =>
+      `${user.name} is ${user.age} years old`;
+    logicInjector.register('format', formatUser);
 
     assert.strictEqual(
-      logic.execute('concatenate', 'hello', 'world'),
-      'hello'.concat('world'),
+      logicInjector.execute('format', { name: 'John', age: 30 }),
+      'John is 30 years old',
     );
   });
 
-  it('should concatenate strings and return the length', () => {
-    const logic = new LogicInjector();
-    logic.register('concatenate', (a: string, b: string) => (a + b).length);
-
-    assert.strictEqual(logic.execute('concatenate', 'hello', 'world'), 10);
-  });
-
-  // create two custom interfaces named userData and updatedUser and create a LogicInjector with those two types as passed generics.
-  // then register a logic and execute it
-  it('should register and execute a logic function with custom interfaces', () => {
-    interface UserData {
-      name: string;
-      age: number;
-    }
-
-    interface UpdatedUser {
-      name: string;
-      age: number;
-      email: string;
-    }
-
-    const person = {
-      name: faker.person.firstName(),
-      age: faker.number.int({ min: 18, max: 100 }),
-      email: faker.internet.email(),
-    };
-
-    const logic = new LogicInjector();
-
-    logic.register(
-      'updateUser',
-      (user: UserData, email: string): UpdatedUser => ({
-        ...user,
-        email,
-      }),
-    );
-
-    const updatedUser = logic.execute(
-      'updateUser',
-      { name: person.name, age: person.age },
-      person.email,
-    );
-    assert.deepEqual(updatedUser, {
-      name: person.name,
-      age: person.age,
-      email: person.email,
-    });
-  });
-
-  it('should get a logic with key', () => {
-    const logic = new LogicInjector();
-    logic.register('add', (a: number, b: number) => a + b);
-
-    const addLogic = logic.get('add');
-    assert.strictEqual(addLogic(1, 2), 3);
-  });
-
-  it('should throw an error when logic is not found', () => {
-    const logic = new LogicInjector();
+  // Null/undefined handling
+  it('should throw when key is undefined', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    const add = (a: number, b: number): number => a + b;
     assert.throws(() => {
-      logic.get('add');
-    }, Error);
+      // @ts-expect-error Testing runtime behavior with undefined
+      logicInjector.register(undefined, add);
+    }, LogicInjectionError);
+  });
+
+  it('should throw when function is null', () => {
+    const logicInjector = new LogicInjector<[number, number], number>();
+    assert.throws(() => {
+      // @ts-expect-error Testing runtime behavior with null
+      logicInjector.register('test', null);
+    }, LogicInjectionError);
   });
 });
