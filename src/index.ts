@@ -1,64 +1,95 @@
 import { ILogicInjection } from '@app/interfaces/logicInjection.interface';
+import {
+  LogicInjectionError,
+  LogicInjectionErrorType,
+} from './utils/LogicInjectionError';
+import { LogicFunction, LogicMap } from './types/logic';
 
 class LogicInjector<TArgs extends any[] = any[], TResult = any>
   implements ILogicInjection<TArgs, TResult>
 {
-  private readonly logicMap: Map<string, (...args: TArgs) => TResult>;
+  private readonly logicMap: LogicMap<TArgs, TResult>;
 
   constructor() {
     this.logicMap = new Map();
   }
 
+  private validateKey(key: string): void {
+    if (typeof key !== 'string' || key.trim().length === 0) {
+      throw new LogicInjectionError(LogicInjectionErrorType.INVALID_KEY, key);
+    }
+  }
+
+  private validateLogicFunction(
+    logicFunction: unknown,
+  ): asserts logicFunction is LogicFunction<TArgs, TResult> {
+    if (typeof logicFunction !== 'function') {
+      throw new LogicInjectionError(
+        LogicInjectionErrorType.INVALID_FUNCTION,
+        'unknown',
+      );
+    }
+  }
+
   /**
    * Register a logic function
-   * @param key
-   * @param logicFunction
+   * @param key - Unique identifier for the logic function
+   * @param logicFunction - The function to register
+   * @throws {LogicInjectionError} When the key is invalid or the logic function is invalid
    */
   register(
     key: string,
-    logicFunction: (...args: TArgs) => TResult,
-  ): Map<string, (...args: TArgs) => TResult> {
+    logicFunction: LogicFunction<TArgs, TResult>,
+  ): LogicMap<TArgs, TResult> {
+    this.validateKey(key);
+    this.validateLogicFunction(logicFunction);
     this.logicMap.set(key, logicFunction);
     return this.logicMap;
   }
 
   /**
    * Execute a logic function
-   * @param key
-   * @param args
+   * @param key - The key of the logic function to execute
+   * @param args - Arguments to pass to the logic function
+   * @throws {LogicInjectionError} When the logic function is not found or the key is invalid
    */
   execute(key: string, ...args: TArgs): TResult {
-    if (!this.logicMap.has(key)) {
-      throw new Error(`Logic with key "${key}" not found`);
+    this.validateKey(key);
+    const logicFunction = this.logicMap.get(key);
+    if (!logicFunction) {
+      throw new LogicInjectionError(LogicInjectionErrorType.NOT_FOUND, key);
     }
-    return this.logicMap.get(key)!(...args);
+    return logicFunction(...args);
   }
 
   /**
    * Unregister a logic function
-   * @param key
+   * @param key - The key of the logic function to unregister
+   * @throws {LogicInjectionError} When the key is invalid
    */
   unregister(key: string): boolean {
+    this.validateKey(key);
     return this.logicMap.delete(key);
   }
 
   /**
    * Get a logic function
-   * @param key
+   * @param key - The key of the logic function to retrieve
+   * @throws {LogicInjectionError} When the logic function is not found or the key is invalid
    */
-  get(key: string): (...args: TArgs) => TResult {
+  get(key: string): LogicFunction<TArgs, TResult> {
+    this.validateKey(key);
     const logicFunction = this.logicMap.get(key);
     if (!logicFunction) {
-      throw new Error(`Logic with key "${key}" not found`);
+      throw new LogicInjectionError(LogicInjectionErrorType.NOT_FOUND, key);
     }
-
     return logicFunction;
   }
 
   /**
    * Get the logic map
    */
-  getLogicList(): Map<string, (...args: TArgs) => TResult> {
+  getLogicList(): LogicMap<TArgs, TResult> {
     return this.logicMap;
   }
 }
