@@ -35,7 +35,7 @@ class LogicInjector<TArgs extends any[] = any[], TResult = any>
    * Register a logic function
    * @param key - Unique identifier for the logic function
    * @param logicFunction - The function to register
-   * @throws {LogicInjectionError} When the key is invalid or the logic function is invalid
+   * @throws {LogicInjectionError} When the key is invalid, the logic function is invalid, or the key already exists
    */
   register(
     key: string,
@@ -43,6 +43,11 @@ class LogicInjector<TArgs extends any[] = any[], TResult = any>
   ): LogicMap<TArgs, TResult> {
     this.validateKey(key);
     this.validateLogicFunction(logicFunction);
+
+    if (this.logicMap.has(key)) {
+      throw new LogicInjectionError(LogicInjectionErrorType.DUPLICATE_KEY, key);
+    }
+
     this.logicMap.set(key, logicFunction);
     return this.logicMap;
   }
