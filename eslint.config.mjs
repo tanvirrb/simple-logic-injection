@@ -11,7 +11,10 @@ export default [
         files: ["**/*.{js,mjs,cjs,ts}"],
         languageOptions: {
             globals: {...globals.browser, ...globals.node},
-            parser: tsParser
+            parser: tsParser,
+            parserOptions: {
+                project: "./tsconfig.json"
+            }
         },
         plugins: {
             "@typescript-eslint": tseslint,
@@ -20,10 +23,11 @@ export default [
         },
         "settings": {
             "import/resolver": {
-                "typescript": {}
+                "typescript": {
+                    project: "./tsconfig.json"
+                }
             }
-        }
-        ,
+        },
         rules: {
             ...pluginJs.configs.recommended.rules,
             ...tseslint.configs['eslint-recommended'].rules,
